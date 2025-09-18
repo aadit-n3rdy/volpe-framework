@@ -1,0 +1,34 @@
+// The greeting service definition.
+service VolpeContainer {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+
+  rpc InitFromSeed (int32) returns () {}
+
+  rpc InitFromSeedPopulation (Population) returns () {}
+
+  rpc GetBestPopulation () returns (Population) {}
+
+  rpc AdjustPopulationSize (int32) returns () {}
+
+  rpc RunForGenerations () returns () {}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  required string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  required string message = 1;
+}
+
+message Individual {
+  required bytes genotype = 1;
+  required float32 fitness = 2;
+}
+
+message Population {
+  required repeated Individual members = 1;
+}

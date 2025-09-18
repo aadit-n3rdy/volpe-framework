@@ -1,0 +1,5 @@
+services:
+  python_rpc:
+    build: .
+    ports:
+      - "50051:50051"
