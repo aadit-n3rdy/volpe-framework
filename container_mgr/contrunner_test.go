@@ -3,9 +3,11 @@ package container_mgr_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	cm "volpe-framework/container_mgr"
 	gc "volpe-framework/grpc_comms"
+	met "volpe-framework/metrics_export"
 
 	"fmt"
 
@@ -15,12 +17,20 @@ import (
 
 func TestRunImage(t *testing.T) {
 	containerName := "grpc_comms_test"
+	problems := map[string]string{
+		"grpc_comms": "grpc_comms_test",
+	}
 	port, err := cm.RunImage("../grpc_comms/grpc_test_img.tar", containerName, 8081)
 	if err != nil {
 		t.Fatalf("failed to run pod with error: %s", err.Error())
 	}
 	defer cm.StopContainer(containerName)
 	t.Logf("started container at port %d", port)
+
+	pme, err := met.NewPodmanMetricExporter("test_device", problems)
+	go pme.Run(containerName)
+	t.Logf("started OTel metric exporter")
+
 	cc, err := grpc.NewClient(fmt.Sprintf("localhost:%d", port),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -36,4 +46,7 @@ func TestRunImage(t *testing.T) {
 	} else {
 		t.Log("got expected msg")
 	}
+
+	deadline, _ := t.Deadline()
+	time.Sleep(time.Now().Sub(deadline.Add(-time.Second)))
 }

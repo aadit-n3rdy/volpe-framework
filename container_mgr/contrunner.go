@@ -3,7 +3,6 @@ package container_mgr
 import (
 	"context"
 	"fmt"
-	"net"
 	"os"
 	"strconv"
 
@@ -16,18 +15,10 @@ import (
 	"github.com/containers/podman/v5/pkg/specgen"
 )
 
-func getFreePort() (int, error) {
-	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
-	if err != nil {
-		return 0, err
-	}
-
-	l, err := net.ListenTCP("tcp", addr)
-	if err != nil {
-		return 0, err
-	}
-	defer l.Close()
-	return l.Addr().(*net.TCPAddr).Port, nil
+func NewPodmanConnection() (context.Context, error) {
+	uid := os.Getuid()
+	conn, err := bindings.NewConnection(context.Background(), fmt.Sprintf("unix:///run/user/%d/podman/podman.sock", uid))
+	return conn, err
 }
 
 func RunImage(imagePath string, containerName string, containerPort uint16) (uint16, error) {

@@ -1,0 +1,27 @@
+services:
+  otel_collector:
+    image: docker.io/otel/opentelemetry-collector-contrib
+    ports:
+      - 4318:4318
+      - 4317:4317
+      - 55679:55679
+  prometheus:
+    image: docker.io/prom/prometheus
+    container_name: volpe-prometheus
+    restart: unless-stopped
+    ports:
+      - 9090:9090
+    command:
+      - '--web.enable-otlp-receiver'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+  grafana:
+    image: docker.io/grafana/grafana-oss
+    container_name: volpe-grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    volumes:
+      - 'grafana_storage:/var/lib/grafana'
+volumes:
+  grafana_storage: {}
