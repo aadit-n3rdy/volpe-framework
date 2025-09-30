@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.21.12
-// source: volpe.proto
+// source: volpe_container.proto
 
-package grpc_comms
+package container
 
 import (
 	context "context"
@@ -313,5 +313,5 @@ var VolpeContainer_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "volpe.proto",
+	Metadata: "volpe_container.proto",
 }

@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
+	gc "volpe-framework/comms/container"
 	cm "volpe-framework/container_mgr"
-	gc "volpe-framework/grpc_comms"
 	met "volpe-framework/metrics_export"
 
 	"fmt"
@@ -20,7 +20,7 @@ func TestRunImage(t *testing.T) {
 	problems := map[string]string{
 		"grpc_comms": "grpc_comms_test",
 	}
-	port, err := cm.RunImage("../grpc_comms/grpc_test_img.tar", containerName, 8081)
+	port, err := cm.RunImage("../comms/pybindings/grpc_test_img.tar", containerName, 8081)
 	if err != nil {
 		t.Fatalf("failed to run pod with error: %s", err.Error())
 	}
@@ -28,7 +28,7 @@ func TestRunImage(t *testing.T) {
 	t.Logf("started container at port %d", port)
 
 	pme, err := met.NewPodmanMetricExporter("test_device", problems)
-	go pme.Run(containerName)
+	go pme.Run()
 	t.Logf("started OTel metric exporter")
 
 	cc, err := grpc.NewClient(fmt.Sprintf("localhost:%d", port),

@@ -1,6 +1,6 @@
 
-import volpe_pb2_grpc as vp
-import volpe_pb2 as pb
+import volpe_container_pb2 as pb
+import volpe_container_pb2_grpc as vp
 import grpc
 import concurrent.futures
 

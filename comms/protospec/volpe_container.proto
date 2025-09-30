@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package = "./grpc_comms";
+option go_package = "./comms/container";
 
 // The greeting service definition.
 service VolpeContainer {
@@ -35,7 +35,6 @@ message HelloReply {
   string message = 1;
 }
 
-
 message Individual {
   bytes genotype = 1;
   float fitness = 2;
@@ -47,5 +46,5 @@ message Population {
 
 message Reply {
   bool success = 1;
-  optional string message = 2;
+  string message = 2;
 }

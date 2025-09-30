@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+import "common.proto";
+
+option go_package = "./comms/internal";
+
+service VolpeMaster {
+    rpc StartStreams (stream WorkerMessage) returns (stream MasterMessage) {}
+}
+
+message WorkerID {
+    string id = 1;
+}
+
+message MasterMessage {
+    // can be adjust population only
+    oneof message {
+        AdjustPopulationMessage adjPop = 1;
+    }
+} 
+
+message AdjustPopulationMessage {
+    string problemID = 1;
+    Population seed = 2;
+    int32 size = 3;
+}
+
+message WorkerMessage {
+    // can be metrics, or subpopulation
+    oneof message {
+        MetricsMessage metrics = 1;
+        Population population = 2;
+    }
+}
+
+message MetricsMessage {
+    float cpuUtil = 1;
+    float memUsage = 2;
+    float memTotal = 3;
+    map<string, ProblemMetrics> problemMetrics = 4;
+}
+
+message ProblemMetrics {
+    float cpuUtil = 1;
+    float memUsage = 2;
+}

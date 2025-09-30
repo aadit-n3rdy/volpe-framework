@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option go_package = "volpe-framework/comms/common";
+
+message Individual {
+  bytes genotype = 1;
+  float fitness = 2;
+}
+
+message Population {
+  repeated Individual members = 1;
+}

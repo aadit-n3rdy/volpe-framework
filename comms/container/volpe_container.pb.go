@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.9
 // 	protoc        v3.21.12
-// source: volpe.proto
+// source: volpe_container.proto
 
-package grpc_comms
+package container
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -31,7 +31,7 @@ type HelloRequest struct {
 
 func (x *HelloRequest) Reset() {
 	*x = HelloRequest{}
-	mi := &file_volpe_proto_msgTypes[0]
+	mi := &file_volpe_container_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *HelloRequest) String() string {
 func (*HelloRequest) ProtoMessage() {}
 
 func (x *HelloRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_volpe_proto_msgTypes[0]
+	mi := &file_volpe_container_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelloRequest.ProtoReflect.Descriptor instead.
 func (*HelloRequest) Descriptor() ([]byte, []int) {
-	return file_volpe_proto_rawDescGZIP(), []int{0}
+	return file_volpe_container_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *HelloRequest) GetName() string {
@@ -75,7 +75,7 @@ type Seed struct {
 
 func (x *Seed) Reset() {
 	*x = Seed{}
-	mi := &file_volpe_proto_msgTypes[1]
+	mi := &file_volpe_container_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -87,7 +87,7 @@ func (x *Seed) String() string {
 func (*Seed) ProtoMessage() {}
 
 func (x *Seed) ProtoReflect() protoreflect.Message {
-	mi := &file_volpe_proto_msgTypes[1]
+	mi := &file_volpe_container_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -100,7 +100,7 @@ func (x *Seed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Seed.ProtoReflect.Descriptor instead.
 func (*Seed) Descriptor() ([]byte, []int) {
-	return file_volpe_proto_rawDescGZIP(), []int{1}
+	return file_volpe_container_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Seed) GetSeed() int32 {
@@ -119,7 +119,7 @@ type PopulationSize struct {
 
 func (x *PopulationSize) Reset() {
 	*x = PopulationSize{}
-	mi := &file_volpe_proto_msgTypes[2]
+	mi := &file_volpe_container_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -131,7 +131,7 @@ func (x *PopulationSize) String() string {
 func (*PopulationSize) ProtoMessage() {}
 
 func (x *PopulationSize) ProtoReflect() protoreflect.Message {
-	mi := &file_volpe_proto_msgTypes[2]
+	mi := &file_volpe_container_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -144,7 +144,7 @@ func (x *PopulationSize) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PopulationSize.ProtoReflect.Descriptor instead.
 func (*PopulationSize) Descriptor() ([]byte, []int) {
-	return file_volpe_proto_rawDescGZIP(), []int{2}
+	return file_volpe_container_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *PopulationSize) GetSize() int32 {
@@ -164,7 +164,7 @@ type HelloReply struct {
 
 func (x *HelloReply) Reset() {
 	*x = HelloReply{}
-	mi := &file_volpe_proto_msgTypes[3]
+	mi := &file_volpe_container_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -176,7 +176,7 @@ func (x *HelloReply) String() string {
 func (*HelloReply) ProtoMessage() {}
 
 func (x *HelloReply) ProtoReflect() protoreflect.Message {
-	mi := &file_volpe_proto_msgTypes[3]
+	mi := &file_volpe_container_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -189,7 +189,7 @@ func (x *HelloReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelloReply.ProtoReflect.Descriptor instead.
 func (*HelloReply) Descriptor() ([]byte, []int) {
-	return file_volpe_proto_rawDescGZIP(), []int{3}
+	return file_volpe_container_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *HelloReply) GetMessage() string {
@@ -209,7 +209,7 @@ type Individual struct {
 
 func (x *Individual) Reset() {
 	*x = Individual{}
-	mi := &file_volpe_proto_msgTypes[4]
+	mi := &file_volpe_container_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -221,7 +221,7 @@ func (x *Individual) String() string {
 func (*Individual) ProtoMessage() {}
 
 func (x *Individual) ProtoReflect() protoreflect.Message {
-	mi := &file_volpe_proto_msgTypes[4]
+	mi := &file_volpe_container_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -234,7 +234,7 @@ func (x *Individual) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Individual.ProtoReflect.Descriptor instead.
 func (*Individual) Descriptor() ([]byte, []int) {
-	return file_volpe_proto_rawDescGZIP(), []int{4}
+	return file_volpe_container_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Individual) GetGenotype() []byte {
@@ -260,7 +260,7 @@ type Population struct {
 
 func (x *Population) Reset() {
 	*x = Population{}
-	mi := &file_volpe_proto_msgTypes[5]
+	mi := &file_volpe_container_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -272,7 +272,7 @@ func (x *Population) String() string {
 func (*Population) ProtoMessage() {}
 
 func (x *Population) ProtoReflect() protoreflect.Message {
-	mi := &file_volpe_proto_msgTypes[5]
+	mi := &file_volpe_container_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -285,7 +285,7 @@ func (x *Population) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Population.ProtoReflect.Descriptor instead.
 func (*Population) Descriptor() ([]byte, []int) {
-	return file_volpe_proto_rawDescGZIP(), []int{5}
+	return file_volpe_container_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Population) GetMembers() []*Individual {
@@ -298,14 +298,14 @@ func (x *Population) GetMembers() []*Individual {
 type Reply struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Message       *string                `protobuf:"bytes,2,opt,name=message,proto3,oneof" json:"message,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Reply) Reset() {
 	*x = Reply{}
-	mi := &file_volpe_proto_msgTypes[6]
+	mi := &file_volpe_container_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -317,7 +317,7 @@ func (x *Reply) String() string {
 func (*Reply) ProtoMessage() {}
 
 func (x *Reply) ProtoReflect() protoreflect.Message {
-	mi := &file_volpe_proto_msgTypes[6]
+	mi := &file_volpe_container_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -330,7 +330,7 @@ func (x *Reply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Reply.ProtoReflect.Descriptor instead.
 func (*Reply) Descriptor() ([]byte, []int) {
-	return file_volpe_proto_rawDescGZIP(), []int{6}
+	return file_volpe_container_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Reply) GetSuccess() bool {
@@ -341,17 +341,17 @@ func (x *Reply) GetSuccess() bool {
 }
 
 func (x *Reply) GetMessage() string {
-	if x != nil && x.Message != nil {
-		return *x.Message
+	if x != nil {
+		return x.Message
 	}
 	return ""
 }
 
-var File_volpe_proto protoreflect.FileDescriptor
+var File_volpe_container_proto protoreflect.FileDescriptor
 
-const file_volpe_proto_rawDesc = "" +
+const file_volpe_container_proto_rawDesc = "" +
 	"\n" +
-	"\vvolpe.proto\"\"\n" +
+	"\x15volpe_container.proto\"\"\n" +
 	"\fHelloRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"\x1a\n" +
 	"\x04Seed\x12\x12\n" +
@@ -367,34 +367,32 @@ const file_volpe_proto_rawDesc = "" +
 	"\afitness\x18\x02 \x01(\x02R\afitness\"3\n" +
 	"\n" +
 	"Population\x12%\n" +
-	"\amembers\x18\x01 \x03(\v2\v.IndividualR\amembers\"L\n" +
+	"\amembers\x18\x01 \x03(\v2\v.IndividualR\amembers\";\n" +
 	"\x05Reply\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x1d\n" +
-	"\amessage\x18\x02 \x01(\tH\x00R\amessage\x88\x01\x01B\n" +
-	"\n" +
-	"\b_message2\xa4\x02\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\xa4\x02\n" +
 	"\x0eVolpeContainer\x12(\n" +
 	"\bSayHello\x12\r.HelloRequest\x1a\v.HelloReply\"\x00\x12\x1f\n" +
 	"\fInitFromSeed\x12\x05.Seed\x1a\x06.Reply\"\x00\x12/\n" +
 	"\x16InitFromSeedPopulation\x12\v.Population\x1a\x06.Reply\"\x00\x123\n" +
 	"\x11GetBestPopulation\x12\x0f.PopulationSize\x1a\v.Population\"\x00\x121\n" +
 	"\x14AdjustPopulationSize\x12\x0f.PopulationSize\x1a\x06.Reply\"\x00\x12.\n" +
-	"\x11RunForGenerations\x12\x0f.PopulationSize\x1a\x06.Reply\"\x00B\x0eZ\f./grpc_commsb\x06proto3"
+	"\x11RunForGenerations\x12\x0f.PopulationSize\x1a\x06.Reply\"\x00B\x13Z\x11./comms/containerb\x06proto3"
 
 var (
-	file_volpe_proto_rawDescOnce sync.Once
-	file_volpe_proto_rawDescData []byte
+	file_volpe_container_proto_rawDescOnce sync.Once
+	file_volpe_container_proto_rawDescData []byte
 )
 
-func file_volpe_proto_rawDescGZIP() []byte {
-	file_volpe_proto_rawDescOnce.Do(func() {
-		file_volpe_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_volpe_proto_rawDesc), len(file_volpe_proto_rawDesc)))
+func file_volpe_container_proto_rawDescGZIP() []byte {
+	file_volpe_container_proto_rawDescOnce.Do(func() {
+		file_volpe_container_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_volpe_container_proto_rawDesc), len(file_volpe_container_proto_rawDesc)))
 	})
-	return file_volpe_proto_rawDescData
+	return file_volpe_container_proto_rawDescData
 }
 
-var file_volpe_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_volpe_proto_goTypes = []any{
+var file_volpe_container_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_volpe_container_proto_goTypes = []any{
 	(*HelloRequest)(nil),   // 0: HelloRequest
 	(*Seed)(nil),           // 1: Seed
 	(*PopulationSize)(nil), // 2: PopulationSize
@@ -403,7 +401,7 @@ var file_volpe_proto_goTypes = []any{
 	(*Population)(nil),     // 5: Population
 	(*Reply)(nil),          // 6: Reply
 }
-var file_volpe_proto_depIdxs = []int32{
+var file_volpe_container_proto_depIdxs = []int32{
 	4, // 0: Population.members:type_name -> Individual
 	0, // 1: VolpeContainer.SayHello:input_type -> HelloRequest
 	1, // 2: VolpeContainer.InitFromSeed:input_type -> Seed
@@ -424,27 +422,26 @@ var file_volpe_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_volpe_proto_init() }
-func file_volpe_proto_init() {
-	if File_volpe_proto != nil {
+func init() { file_volpe_container_proto_init() }
+func file_volpe_container_proto_init() {
+	if File_volpe_container_proto != nil {
 		return
 	}
-	file_volpe_proto_msgTypes[6].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_volpe_proto_rawDesc), len(file_volpe_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_volpe_container_proto_rawDesc), len(file_volpe_container_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_volpe_proto_goTypes,
-		DependencyIndexes: file_volpe_proto_depIdxs,
-		MessageInfos:      file_volpe_proto_msgTypes,
+		GoTypes:           file_volpe_container_proto_goTypes,
+		DependencyIndexes: file_volpe_container_proto_depIdxs,
+		MessageInfos:      file_volpe_container_proto_msgTypes,
 	}.Build()
-	File_volpe_proto = out.File
-	file_volpe_proto_goTypes = nil
-	file_volpe_proto_depIdxs = nil
+	File_volpe_container_proto = out.File
+	file_volpe_container_proto_goTypes = nil
+	file_volpe_container_proto_depIdxs = nil
 }

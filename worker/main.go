@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
+	gc "volpe-framework/comms/container"
 	cm "volpe-framework/container_mgr"
-	gc "volpe-framework/grpc_comms"
 	met "volpe-framework/metrics_export"
 
 	"fmt"

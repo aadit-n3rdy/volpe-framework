@@ -3,9 +3,9 @@
 import grpc
 import warnings
 
-import volpe_pb2 as volpe__pb2
+import volpe_container_pb2 as volpe__container__pb2
 
-GRPC_GENERATED_VERSION = '1.75.0'
+GRPC_GENERATED_VERSION = '1.75.1'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in volpe_pb2_grpc.py depends on'
+        + f' but the generated code in volpe_container_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -37,33 +37,33 @@ class VolpeContainerStub(object):
         """
         self.SayHello = channel.unary_unary(
                 '/VolpeContainer/SayHello',
-                request_serializer=volpe__pb2.HelloRequest.SerializeToString,
-                response_deserializer=volpe__pb2.HelloReply.FromString,
+                request_serializer=volpe__container__pb2.HelloRequest.SerializeToString,
+                response_deserializer=volpe__container__pb2.HelloReply.FromString,
                 _registered_method=True)
         self.InitFromSeed = channel.unary_unary(
                 '/VolpeContainer/InitFromSeed',
-                request_serializer=volpe__pb2.Seed.SerializeToString,
-                response_deserializer=volpe__pb2.Reply.FromString,
+                request_serializer=volpe__container__pb2.Seed.SerializeToString,
+                response_deserializer=volpe__container__pb2.Reply.FromString,
                 _registered_method=True)
         self.InitFromSeedPopulation = channel.unary_unary(
                 '/VolpeContainer/InitFromSeedPopulation',
-                request_serializer=volpe__pb2.Population.SerializeToString,
-                response_deserializer=volpe__pb2.Reply.FromString,
+                request_serializer=volpe__container__pb2.Population.SerializeToString,
+                response_deserializer=volpe__container__pb2.Reply.FromString,
                 _registered_method=True)
         self.GetBestPopulation = channel.unary_unary(
                 '/VolpeContainer/GetBestPopulation',
-                request_serializer=volpe__pb2.PopulationSize.SerializeToString,
-                response_deserializer=volpe__pb2.Population.FromString,
+                request_serializer=volpe__container__pb2.PopulationSize.SerializeToString,
+                response_deserializer=volpe__container__pb2.Population.FromString,
                 _registered_method=True)
         self.AdjustPopulationSize = channel.unary_unary(
                 '/VolpeContainer/AdjustPopulationSize',
-                request_serializer=volpe__pb2.PopulationSize.SerializeToString,
-                response_deserializer=volpe__pb2.Reply.FromString,
+                request_serializer=volpe__container__pb2.PopulationSize.SerializeToString,
+                response_deserializer=volpe__container__pb2.Reply.FromString,
                 _registered_method=True)
         self.RunForGenerations = channel.unary_unary(
                 '/VolpeContainer/RunForGenerations',
-                request_serializer=volpe__pb2.PopulationSize.SerializeToString,
-                response_deserializer=volpe__pb2.Reply.FromString,
+                request_serializer=volpe__container__pb2.PopulationSize.SerializeToString,
+                response_deserializer=volpe__container__pb2.Reply.FromString,
                 _registered_method=True)
 
 
@@ -113,33 +113,33 @@ def add_VolpeContainerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'SayHello': grpc.unary_unary_rpc_method_handler(
                     servicer.SayHello,
-                    request_deserializer=volpe__pb2.HelloRequest.FromString,
-                    response_serializer=volpe__pb2.HelloReply.SerializeToString,
+                    request_deserializer=volpe__container__pb2.HelloRequest.FromString,
+                    response_serializer=volpe__container__pb2.HelloReply.SerializeToString,
             ),
             'InitFromSeed': grpc.unary_unary_rpc_method_handler(
                     servicer.InitFromSeed,
-                    request_deserializer=volpe__pb2.Seed.FromString,
-                    response_serializer=volpe__pb2.Reply.SerializeToString,
+                    request_deserializer=volpe__container__pb2.Seed.FromString,
+                    response_serializer=volpe__container__pb2.Reply.SerializeToString,
             ),
             'InitFromSeedPopulation': grpc.unary_unary_rpc_method_handler(
                     servicer.InitFromSeedPopulation,
-                    request_deserializer=volpe__pb2.Population.FromString,
-                    response_serializer=volpe__pb2.Reply.SerializeToString,
+                    request_deserializer=volpe__container__pb2.Population.FromString,
+                    response_serializer=volpe__container__pb2.Reply.SerializeToString,
             ),
             'GetBestPopulation': grpc.unary_unary_rpc_method_handler(
                     servicer.GetBestPopulation,
-                    request_deserializer=volpe__pb2.PopulationSize.FromString,
-                    response_serializer=volpe__pb2.Population.SerializeToString,
+                    request_deserializer=volpe__container__pb2.PopulationSize.FromString,
+                    response_serializer=volpe__container__pb2.Population.SerializeToString,
             ),
             'AdjustPopulationSize': grpc.unary_unary_rpc_method_handler(
                     servicer.AdjustPopulationSize,
-                    request_deserializer=volpe__pb2.PopulationSize.FromString,
-                    response_serializer=volpe__pb2.Reply.SerializeToString,
+                    request_deserializer=volpe__container__pb2.PopulationSize.FromString,
+                    response_serializer=volpe__container__pb2.Reply.SerializeToString,
             ),
             'RunForGenerations': grpc.unary_unary_rpc_method_handler(
                     servicer.RunForGenerations,
-                    request_deserializer=volpe__pb2.PopulationSize.FromString,
-                    response_serializer=volpe__pb2.Reply.SerializeToString,
+                    request_deserializer=volpe__container__pb2.PopulationSize.FromString,
+                    response_serializer=volpe__container__pb2.Reply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -168,8 +168,8 @@ class VolpeContainer(object):
             request,
             target,
             '/VolpeContainer/SayHello',
-            volpe__pb2.HelloRequest.SerializeToString,
-            volpe__pb2.HelloReply.FromString,
+            volpe__container__pb2.HelloRequest.SerializeToString,
+            volpe__container__pb2.HelloReply.FromString,
             options,
             channel_credentials,
             insecure,
@@ -195,8 +195,8 @@ class VolpeContainer(object):
             request,
             target,
             '/VolpeContainer/InitFromSeed',
-            volpe__pb2.Seed.SerializeToString,
-            volpe__pb2.Reply.FromString,
+            volpe__container__pb2.Seed.SerializeToString,
+            volpe__container__pb2.Reply.FromString,
             options,
             channel_credentials,
             insecure,
@@ -222,8 +222,8 @@ class VolpeContainer(object):
             request,
             target,
             '/VolpeContainer/InitFromSeedPopulation',
-            volpe__pb2.Population.SerializeToString,
-            volpe__pb2.Reply.FromString,
+            volpe__container__pb2.Population.SerializeToString,
+            volpe__container__pb2.Reply.FromString,
             options,
             channel_credentials,
             insecure,
@@ -249,8 +249,8 @@ class VolpeContainer(object):
             request,
             target,
             '/VolpeContainer/GetBestPopulation',
-            volpe__pb2.PopulationSize.SerializeToString,
-            volpe__pb2.Population.FromString,
+            volpe__container__pb2.PopulationSize.SerializeToString,
+            volpe__container__pb2.Population.FromString,
             options,
             channel_credentials,
             insecure,
@@ -276,8 +276,8 @@ class VolpeContainer(object):
             request,
             target,
             '/VolpeContainer/AdjustPopulationSize',
-            volpe__pb2.PopulationSize.SerializeToString,
-            volpe__pb2.Reply.FromString,
+            volpe__container__pb2.PopulationSize.SerializeToString,
+            volpe__container__pb2.Reply.FromString,
             options,
             channel_credentials,
             insecure,
@@ -303,8 +303,8 @@ class VolpeContainer(object):
             request,
             target,
             '/VolpeContainer/RunForGenerations',
-            volpe__pb2.PopulationSize.SerializeToString,
-            volpe__pb2.Reply.FromString,
+            volpe__container__pb2.PopulationSize.SerializeToString,
+            volpe__container__pb2.Reply.FromString,
             options,
             channel_credentials,
             insecure,

@@ -1,10 +1,10 @@
-package grpc_comms_test
+package container_test
 
 import (
 	"context"
 	"testing"
 
-	gc "volpe-framework/grpc_comms"
+	gc "volpe-framework/comms/container"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -12,7 +12,7 @@ import (
 
 func TestGrpcComms(t *testing.T) {
 	t.Log("Using port 8081 for testing")
-	cc, err := grpc.NewClient("localhost:35209", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	cc, err := grpc.NewClient("localhost:8081", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatalf("error connecting to localhost:8081, %s", err.Error())
 	}
