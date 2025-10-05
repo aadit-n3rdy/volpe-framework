@@ -20,10 +20,10 @@ type WorkerData struct {
 
 func newZeroMetrics() WorkerMetrics {
 	return WorkerMetrics{
-		cpuUtil:     0,
-		memUsage:    0,
-		memCapacity: 0.01,
-		appMetrics:  make(map[string]AppMetrics),
+		CpuUtil:            0,
+		MemUsage:           0,
+		MemTotal:           0.01,
+		ApplicationMetrics: make(map[string]*ApplicationMetrics),
 	}
 }
 
@@ -51,7 +51,12 @@ func (swt *StaticWorkerTracker) SetMetrics(args *SetMetricsRequest, res *int32) 
 	swt.workerMutex.Lock()
 	defer swt.workerMutex.Unlock()
 	worker := swt.workers[args.id]
-	worker.metrics = args.metrics
+	worker.metrics = WorkerMetrics{
+		CpuUtil:            args.metrics.CpuUtil,
+		MemUsage:           args.metrics.MemUsage,
+		MemTotal:           args.metrics.MemTotal,
+		ApplicationMetrics: args.metrics.ApplicationMetrics,
+	}
 	worker.lastUpdate = time.Now()
 	return nil
 }

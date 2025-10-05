@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.21.12
-// source: volpe_internal.proto
+// source: volpe.proto
 
-package internal
+package volpe
 
 import (
 	context "context"
@@ -111,5 +111,5 @@ var VolpeMaster_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "volpe_internal.proto",
+	Metadata: "volpe.proto",
 }

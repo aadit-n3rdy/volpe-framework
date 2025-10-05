@@ -9,4 +9,5 @@ message Individual {
 
 message Population {
   repeated Individual members = 1;
+  string problemID = 2;
 }

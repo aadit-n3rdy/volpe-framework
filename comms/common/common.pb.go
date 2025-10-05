@@ -76,6 +76,7 @@ func (x *Individual) GetFitness() float32 {
 type Population struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Members       []*Individual          `protobuf:"bytes,1,rep,name=members,proto3" json:"members,omitempty"`
+	ProblemID     string                 `protobuf:"bytes,2,opt,name=problemID,proto3" json:"problemID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -117,6 +118,13 @@ func (x *Population) GetMembers() []*Individual {
 	return nil
 }
 
+func (x *Population) GetProblemID() string {
+	if x != nil {
+		return x.ProblemID
+	}
+	return ""
+}
+
 var File_common_proto protoreflect.FileDescriptor
 
 const file_common_proto_rawDesc = "" +
@@ -125,10 +133,11 @@ const file_common_proto_rawDesc = "" +
 	"\n" +
 	"Individual\x12\x1a\n" +
 	"\bgenotype\x18\x01 \x01(\fR\bgenotype\x12\x18\n" +
-	"\afitness\x18\x02 \x01(\x02R\afitness\"3\n" +
+	"\afitness\x18\x02 \x01(\x02R\afitness\"Q\n" +
 	"\n" +
 	"Population\x12%\n" +
-	"\amembers\x18\x01 \x03(\v2\v.IndividualR\amembersB\x1eZ\x1cvolpe-framework/comms/commonb\x06proto3"
+	"\amembers\x18\x01 \x03(\v2\v.IndividualR\amembers\x12\x1c\n" +
+	"\tproblemID\x18\x02 \x01(\tR\tproblemIDB\x1eZ\x1cvolpe-framework/comms/commonb\x06proto3"
 
 var (
 	file_common_proto_rawDescOnce sync.Once

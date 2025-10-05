@@ -2,6 +2,7 @@ package metrics_export
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/containers/podman/v5/pkg/bindings/containers"
@@ -12,6 +13,7 @@ import (
 	otelmetric "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/sdk/metric"
 
+	volpeComms "volpe-framework/comms/volpe"
 	cm "volpe-framework/container_mgr"
 )
 
@@ -20,6 +22,7 @@ type PodmanMetricExporter struct {
 	problems   map[string]string
 	deviceName string
 	meter      otelmetric.Meter
+	comms      *volpeComms.WorkerComms
 }
 
 var meterprovider *metric.MeterProvider
@@ -43,7 +46,10 @@ func InitOTelSDK() error {
 	return nil
 }
 
-func NewPodmanMetricExporter(deviceName string, problems map[string]string) (pme *PodmanMetricExporter, err error) {
+func NewPodmanMetricExporter(deviceName string, problems map[string]string, comms *volpeComms.WorkerComms) (pme *PodmanMetricExporter, err error) {
+	if meterprovider == nil {
+		return nil, errors.New("OTel SDK has not been initialized, call InitOTelSDK()")
+	}
 	// problems: map of problem name to container name
 	pme = new(PodmanMetricExporter)
 	pme.conn, err = cm.NewPodmanConnection()

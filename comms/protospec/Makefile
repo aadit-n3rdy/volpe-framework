@@ -1,5 +1,7 @@
 
-all: container_comms internal_comms
+.PHONY: all common container_comms volpe_comms
+
+all: container_comms volpe_comms
 
 common: common.proto
 	protoc -I=. --go_out=../common --go_opt=paths=source_relative \
@@ -14,7 +16,7 @@ container_comms: volpe_container.proto common
 	python3 -m grpc_tools.protoc -I. --python_out=../pybindings --pyi_out=../pybindings \
 	--grpc_python_out=../pybindings volpe_container.proto
 
-internal_comms: volpe_internal.proto common
-	protoc -I=. --go_out=../internal --go_opt=paths=source_relative \
-	--go-grpc_out=../internal --go-grpc_opt=paths=source_relative \
-	volpe_internal.proto
+volpe_comms: volpe.proto common
+	protoc -I=. --go_out=../volpe --go_opt=paths=source_relative \
+	--go-grpc_out=../volpe --go-grpc_opt=paths=source_relative \
+	volpe.proto

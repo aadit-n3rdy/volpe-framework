@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "common.proto";
 
-option go_package = "./comms/internal";
+option go_package = "./comms/volpe";
 
 service VolpeMaster {
     rpc StartStreams (stream WorkerMessage) returns (stream MasterMessage) {}
@@ -30,6 +30,7 @@ message WorkerMessage {
     oneof message {
         MetricsMessage metrics = 1;
         Population population = 2;
+        WorkerID workerID = 3;
     }
 }
 
@@ -37,10 +38,11 @@ message MetricsMessage {
     float cpuUtil = 1;
     float memUsage = 2;
     float memTotal = 3;
-    map<string, ProblemMetrics> problemMetrics = 4;
+    map<string, ApplicationMetrics> applicationMetrics = 4;
+    string workerID = 5;
 }
 
-message ProblemMetrics {
+message ApplicationMetrics {
     float cpuUtil = 1;
     float memUsage = 2;
 }

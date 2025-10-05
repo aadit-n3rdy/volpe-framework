@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	gc "volpe-framework/comms/container"
@@ -47,11 +48,11 @@ func main() {
 		resp, err := client.SayHello(context.Background(), &gc.HelloRequest{Name: "xyz"})
 		if err != nil {
 			log.Fatal().Caller().Msgf("failed to call sayhello: %s", err.Error())
-			panic(err)
+			panic(errors.New("failed to call sayhello"))
 		}
 		if resp.GetMessage() != "hello xyz" {
 			log.Fatal().Caller().Msgf("not expected msg: %s", resp.GetMessage())
-			panic(err)
+			panic(errors.New("unexpected msg from container"))
 		} else {
 			log.Log().Caller().Msg("got expected msg")
 		}
