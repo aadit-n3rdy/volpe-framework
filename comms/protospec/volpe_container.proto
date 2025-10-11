@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "common.proto";
 option go_package = "./comms/container";
 
 // The greeting service definition.
@@ -33,15 +34,6 @@ message PopulationSize {
 // The response message containing the greetings
 message HelloReply {
   string message = 1;
-}
-
-message Individual {
-  bytes genotype = 1;
-  float fitness = 2;
-}
-
-message Population {
-  repeated Individual members = 1;
 }
 
 message Reply {

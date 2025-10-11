@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	common "volpe-framework/comms/common"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -36,8 +37,8 @@ type VolpeContainerClient interface {
 	// Sends a greeting
 	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	InitFromSeed(ctx context.Context, in *Seed, opts ...grpc.CallOption) (*Reply, error)
-	InitFromSeedPopulation(ctx context.Context, in *Population, opts ...grpc.CallOption) (*Reply, error)
-	GetBestPopulation(ctx context.Context, in *PopulationSize, opts ...grpc.CallOption) (*Population, error)
+	InitFromSeedPopulation(ctx context.Context, in *common.Population, opts ...grpc.CallOption) (*Reply, error)
+	GetBestPopulation(ctx context.Context, in *PopulationSize, opts ...grpc.CallOption) (*common.Population, error)
 	AdjustPopulationSize(ctx context.Context, in *PopulationSize, opts ...grpc.CallOption) (*Reply, error)
 	RunForGenerations(ctx context.Context, in *PopulationSize, opts ...grpc.CallOption) (*Reply, error)
 }
@@ -70,7 +71,7 @@ func (c *volpeContainerClient) InitFromSeed(ctx context.Context, in *Seed, opts 
 	return out, nil
 }
 
-func (c *volpeContainerClient) InitFromSeedPopulation(ctx context.Context, in *Population, opts ...grpc.CallOption) (*Reply, error) {
+func (c *volpeContainerClient) InitFromSeedPopulation(ctx context.Context, in *common.Population, opts ...grpc.CallOption) (*Reply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Reply)
 	err := c.cc.Invoke(ctx, VolpeContainer_InitFromSeedPopulation_FullMethodName, in, out, cOpts...)
@@ -80,9 +81,9 @@ func (c *volpeContainerClient) InitFromSeedPopulation(ctx context.Context, in *P
 	return out, nil
 }
 
-func (c *volpeContainerClient) GetBestPopulation(ctx context.Context, in *PopulationSize, opts ...grpc.CallOption) (*Population, error) {
+func (c *volpeContainerClient) GetBestPopulation(ctx context.Context, in *PopulationSize, opts ...grpc.CallOption) (*common.Population, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Population)
+	out := new(common.Population)
 	err := c.cc.Invoke(ctx, VolpeContainer_GetBestPopulation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -119,8 +120,8 @@ type VolpeContainerServer interface {
 	// Sends a greeting
 	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
 	InitFromSeed(context.Context, *Seed) (*Reply, error)
-	InitFromSeedPopulation(context.Context, *Population) (*Reply, error)
-	GetBestPopulation(context.Context, *PopulationSize) (*Population, error)
+	InitFromSeedPopulation(context.Context, *common.Population) (*Reply, error)
+	GetBestPopulation(context.Context, *PopulationSize) (*common.Population, error)
 	AdjustPopulationSize(context.Context, *PopulationSize) (*Reply, error)
 	RunForGenerations(context.Context, *PopulationSize) (*Reply, error)
 	mustEmbedUnimplementedVolpeContainerServer()
@@ -139,10 +140,10 @@ func (UnimplementedVolpeContainerServer) SayHello(context.Context, *HelloRequest
 func (UnimplementedVolpeContainerServer) InitFromSeed(context.Context, *Seed) (*Reply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitFromSeed not implemented")
 }
-func (UnimplementedVolpeContainerServer) InitFromSeedPopulation(context.Context, *Population) (*Reply, error) {
+func (UnimplementedVolpeContainerServer) InitFromSeedPopulation(context.Context, *common.Population) (*Reply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitFromSeedPopulation not implemented")
 }
-func (UnimplementedVolpeContainerServer) GetBestPopulation(context.Context, *PopulationSize) (*Population, error) {
+func (UnimplementedVolpeContainerServer) GetBestPopulation(context.Context, *PopulationSize) (*common.Population, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBestPopulation not implemented")
 }
 func (UnimplementedVolpeContainerServer) AdjustPopulationSize(context.Context, *PopulationSize) (*Reply, error) {
@@ -209,7 +210,7 @@ func _VolpeContainer_InitFromSeed_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _VolpeContainer_InitFromSeedPopulation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Population)
+	in := new(common.Population)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -221,7 +222,7 @@ func _VolpeContainer_InitFromSeedPopulation_Handler(srv interface{}, ctx context
 		FullMethod: VolpeContainer_InitFromSeedPopulation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VolpeContainerServer).InitFromSeedPopulation(ctx, req.(*Population))
+		return srv.(VolpeContainerServer).InitFromSeedPopulation(ctx, req.(*common.Population))
 	}
 	return interceptor(ctx, in, info, handler)
 }

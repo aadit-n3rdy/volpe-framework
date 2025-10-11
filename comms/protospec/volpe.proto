@@ -46,3 +46,5 @@ message ApplicationMetrics {
     float cpuUtil = 1;
     float memUsage = 2;
 }
+
+// TODO: add close msgs

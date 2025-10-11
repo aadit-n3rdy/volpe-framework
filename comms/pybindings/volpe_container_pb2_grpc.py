@@ -3,6 +3,7 @@
 import grpc
 import warnings
 
+import common_pb2 as common__pb2
 import volpe_container_pb2 as volpe__container__pb2
 
 GRPC_GENERATED_VERSION = '1.75.1'
@@ -47,13 +48,13 @@ class VolpeContainerStub(object):
                 _registered_method=True)
         self.InitFromSeedPopulation = channel.unary_unary(
                 '/VolpeContainer/InitFromSeedPopulation',
-                request_serializer=volpe__container__pb2.Population.SerializeToString,
+                request_serializer=common__pb2.Population.SerializeToString,
                 response_deserializer=volpe__container__pb2.Reply.FromString,
                 _registered_method=True)
         self.GetBestPopulation = channel.unary_unary(
                 '/VolpeContainer/GetBestPopulation',
                 request_serializer=volpe__container__pb2.PopulationSize.SerializeToString,
-                response_deserializer=volpe__container__pb2.Population.FromString,
+                response_deserializer=common__pb2.Population.FromString,
                 _registered_method=True)
         self.AdjustPopulationSize = channel.unary_unary(
                 '/VolpeContainer/AdjustPopulationSize',
@@ -123,13 +124,13 @@ def add_VolpeContainerServicer_to_server(servicer, server):
             ),
             'InitFromSeedPopulation': grpc.unary_unary_rpc_method_handler(
                     servicer.InitFromSeedPopulation,
-                    request_deserializer=volpe__container__pb2.Population.FromString,
+                    request_deserializer=common__pb2.Population.FromString,
                     response_serializer=volpe__container__pb2.Reply.SerializeToString,
             ),
             'GetBestPopulation': grpc.unary_unary_rpc_method_handler(
                     servicer.GetBestPopulation,
                     request_deserializer=volpe__container__pb2.PopulationSize.FromString,
-                    response_serializer=volpe__container__pb2.Population.SerializeToString,
+                    response_serializer=common__pb2.Population.SerializeToString,
             ),
             'AdjustPopulationSize': grpc.unary_unary_rpc_method_handler(
                     servicer.AdjustPopulationSize,
@@ -222,7 +223,7 @@ class VolpeContainer(object):
             request,
             target,
             '/VolpeContainer/InitFromSeedPopulation',
-            volpe__container__pb2.Population.SerializeToString,
+            common__pb2.Population.SerializeToString,
             volpe__container__pb2.Reply.FromString,
             options,
             channel_credentials,
@@ -250,7 +251,7 @@ class VolpeContainer(object):
             target,
             '/VolpeContainer/GetBestPopulation',
             volpe__container__pb2.PopulationSize.SerializeToString,
-            volpe__container__pb2.Population.FromString,
+            common__pb2.Population.FromString,
             options,
             channel_credentials,
             insecure,

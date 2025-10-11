@@ -38,10 +38,12 @@ func TestComms(t *testing.T) {
 		},
 		WorkerID: "abcd123",
 	}
+	t.Log("sending metrics to master")
 	err = wc.SendMetrics(&metricsMsg)
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Log("sent metrics to master")
 
 	recMsg, ok := <-metricChan
 	if !ok {

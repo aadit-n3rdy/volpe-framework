@@ -76,7 +76,7 @@ func (x *Individual) GetFitness() float32 {
 type Population struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Members       []*Individual          `protobuf:"bytes,1,rep,name=members,proto3" json:"members,omitempty"`
-	ProblemID     string                 `protobuf:"bytes,2,opt,name=problemID,proto3" json:"problemID,omitempty"`
+	ProblemID     *string                `protobuf:"bytes,2,opt,name=problemID,proto3,oneof" json:"problemID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -119,8 +119,8 @@ func (x *Population) GetMembers() []*Individual {
 }
 
 func (x *Population) GetProblemID() string {
-	if x != nil {
-		return x.ProblemID
+	if x != nil && x.ProblemID != nil {
+		return *x.ProblemID
 	}
 	return ""
 }
@@ -133,11 +133,13 @@ const file_common_proto_rawDesc = "" +
 	"\n" +
 	"Individual\x12\x1a\n" +
 	"\bgenotype\x18\x01 \x01(\fR\bgenotype\x12\x18\n" +
-	"\afitness\x18\x02 \x01(\x02R\afitness\"Q\n" +
+	"\afitness\x18\x02 \x01(\x02R\afitness\"d\n" +
 	"\n" +
 	"Population\x12%\n" +
-	"\amembers\x18\x01 \x03(\v2\v.IndividualR\amembers\x12\x1c\n" +
-	"\tproblemID\x18\x02 \x01(\tR\tproblemIDB\x1eZ\x1cvolpe-framework/comms/commonb\x06proto3"
+	"\amembers\x18\x01 \x03(\v2\v.IndividualR\amembers\x12!\n" +
+	"\tproblemID\x18\x02 \x01(\tH\x00R\tproblemID\x88\x01\x01B\f\n" +
+	"\n" +
+	"_problemIDB\x1eZ\x1cvolpe-framework/comms/commonb\x06proto3"
 
 var (
 	file_common_proto_rawDescOnce sync.Once
@@ -170,6 +172,7 @@ func file_common_proto_init() {
 	if File_common_proto != nil {
 		return
 	}
+	file_common_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

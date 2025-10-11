@@ -21,9 +21,8 @@ func NewPodmanConnection() (context.Context, error) {
 	return conn, err
 }
 
-func RunImage(imagePath string, containerName string, containerPort uint16) (uint16, error) {
-	uid := os.Getuid()
-	conn, err := bindings.NewConnection(context.Background(), fmt.Sprintf("unix:///run/user/%d/podman/podman.sock", uid))
+func runImage(imagePath string, containerName string, containerPort uint16) (uint16, error) {
+	conn, err := NewPodmanConnection()
 	if err != nil {
 		log.Error().Caller().Msg(fmt.Sprintf("error creating podman connection: %s", err.Error()))
 		return 0, err
@@ -73,9 +72,8 @@ func RunImage(imagePath string, containerName string, containerPort uint16) (uin
 	return uint16(hostPort), nil
 }
 
-func StopContainer(containerName string) {
-	uid := os.Getuid()
-	conn, err := bindings.NewConnection(context.Background(), fmt.Sprintf("unix:///run/user/%d/podman/podman.sock", uid))
+func stopContainer(containerName string) {
+	conn, err := NewPodmanConnection()
 	if err != nil {
 		log.Error().Caller().Msg(fmt.Sprintf("error creating podman connection: %s", err.Error()))
 	}

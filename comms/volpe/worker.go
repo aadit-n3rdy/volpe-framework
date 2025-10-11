@@ -9,6 +9,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+// TODO: handle stream closing
+
 type WorkerComms struct {
 	client VolpeMasterClient
 	stream grpc.BidiStreamingClient[WorkerMessage, MasterMessage]

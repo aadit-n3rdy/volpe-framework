@@ -13,6 +13,7 @@ import (
 	otelmetric "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/sdk/metric"
 
+	"volpe-framework/comms/volpe"
 	volpeComms "volpe-framework/comms/volpe"
 	cm "volpe-framework/container_mgr"
 )
@@ -91,9 +92,19 @@ func (pme *PodmanMetricExporter) Run() error {
 		Stream: &statsStream,
 		All:    &statsAll,
 	})
+	applnMetrics := make(map[string]*volpeComms.ApplicationMetrics)
+	metricsMsg := &volpeComms.MetricsMessage{
+		CpuUtil:            0,
+		MemTotal:           0,
+		MemUsage:           0,
+		ApplicationMetrics: applnMetrics,
+	}
+	attribSets := make(map[string]attribute.Set)
 	for {
 		report := <-statChan
 		log.Info().Caller().Msg("got report")
+		totalCPU := float32(0)
+		totalMem := float32(0)
 		for i := range report.Stats {
 			contName := report.Stats[i].Name
 			log.Info().Caller().Msgf("reporting on %s", contName)
@@ -101,14 +112,32 @@ func (pme *PodmanMetricExporter) Run() error {
 			if !ok {
 				pblmName = "<unknown>"
 				log.Warn().Caller().Msgf("unknown container %s", contName)
+				continue
 			}
-			attribSet := attribute.NewSet(
-				attribute.KeyValue{Key: attribute.Key("host"), Value: attribute.StringValue(pme.deviceName)},
-				attribute.KeyValue{Key: attribute.Key("problem"), Value: attribute.StringValue(pblmName)},
-			)
+			attribSet, ok := attribSets[pblmName]
+			if !ok {
+				attribSet = attribute.NewSet(
+					attribute.KeyValue{Key: attribute.Key("host"), Value: attribute.StringValue(pme.deviceName)},
+					attribute.KeyValue{Key: attribute.Key("problem"), Value: attribute.StringValue(pblmName)},
+				)
+			}
 			cpuUtilPerAppln.Record(context.Background(), report.Stats[i].CPU,
 				otelmetric.WithAttributeSet(attribSet),
 			)
+
+			totalCPU += float32(report.Stats[i].CPU)
+			totalMem += float32(report.Stats[i].MemUsage)
+
+			appln, ok := applnMetrics[pblmName]
+			if !ok {
+				appln = &volpe.ApplicationMetrics{}
+				applnMetrics[pblmName] = appln
+			}
+			appln.CpuUtil = float32(report.Stats[i].CPU)
+			appln.MemUsage = float32(report.Stats[i].MemUsage)
 		}
+		metricsMsg.CpuUtil = totalCPU
+		metricsMsg.MemUsage = totalMem
+		pme.comms.SendMetrics(metricsMsg)
 	}
 }

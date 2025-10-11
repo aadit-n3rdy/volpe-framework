@@ -1,8 +1,7 @@
-from google.protobuf.internal import containers as _containers
+import common_pb2 as _common_pb2
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from collections.abc import Iterable as _Iterable, Mapping as _Mapping
-from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
+from typing import ClassVar as _ClassVar, Optional as _Optional
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -29,20 +28,6 @@ class HelloReply(_message.Message):
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     message: str
     def __init__(self, message: _Optional[str] = ...) -> None: ...
-
-class Individual(_message.Message):
-    __slots__ = ("genotype", "fitness")
-    GENOTYPE_FIELD_NUMBER: _ClassVar[int]
-    FITNESS_FIELD_NUMBER: _ClassVar[int]
-    genotype: bytes
-    fitness: float
-    def __init__(self, genotype: _Optional[bytes] = ..., fitness: _Optional[float] = ...) -> None: ...
-
-class Population(_message.Message):
-    __slots__ = ("members",)
-    MEMBERS_FIELD_NUMBER: _ClassVar[int]
-    members: _containers.RepeatedCompositeFieldContainer[Individual]
-    def __init__(self, members: _Optional[_Iterable[_Union[Individual, _Mapping]]] = ...) -> None: ...
 
 class Reply(_message.Message):
     __slots__ = ("success", "message")

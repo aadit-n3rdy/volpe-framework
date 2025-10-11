@@ -1,6 +1,7 @@
 package volpe
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net"
@@ -9,6 +10,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 )
+
+// TODO: handle stream closing
 
 type MasterComms struct {
 	mcs masterCommsServer
@@ -32,48 +35,49 @@ func mcsStreamHandlerThread(
 ) {
 
 	masterRecvChan := make(chan *WorkerMessage)
-	var closeReader sync.Mutex
-	closeReader.Lock()
+	readerContext, closeReader := context.WithCancel(context.Background())
 
-	readerThread := func() {
+	readerThread := func(ctx context.Context) {
+		defer close(masterRecvChan)
 		for {
-			if closeReader.TryLock() {
-				close(masterRecvChan)
+			if ctx.Err() != nil {
+				log.Info().Caller().Msgf("closing readerThread for workerID %s", workerID)
 				return
 			}
 			wm, err := stream.Recv()
 			if err != nil {
 				log.Error().Caller().Msg(err.Error())
-				close(masterRecvChan)
 				return
 			}
 			masterRecvChan <- wm
 		}
 	}
-	go readerThread()
+	go readerThread(readerContext)
+	defer closeReader()
 	for {
 		select {
 		case result, ok := <-masterRecvChan:
 			if !ok {
 				// TODO: Notify of stream closure
+				log.Warn().Caller().Msgf("workerID %s channel closed", workerID)
 				return
 			}
 			if result.GetMetrics() != nil {
 				metricChan <- result.GetMetrics()
 			} else if result.GetPopulation() != nil {
 				// TODO: Send population to appropriate worker
+				log.Warn().Caller().Msgf("population msg not implemented in master comms")
 			} else if result.GetWorkerID() != nil {
-				log.Warn().Caller().Msg("got workerID from stream for " + workerID)
+				log.Warn().Caller().Msg("got unexpected workerID from stream for " + workerID)
 			}
 		case result, ok := <-masterSendChan:
 			if !ok {
-				closeReader.Unlock()
+				log.Info().Caller().Msgf("send chan to workerID %s closed, exiting", workerID)
+				return
 			}
 			err := stream.Send(result)
 			if err != nil {
 				log.Error().Caller().Msg(err.Error())
-				// readerThread will close automatically, JIC
-				closeReader.Unlock()
 				// TODO: inform that stream no longer works
 				return
 			}
@@ -95,9 +99,11 @@ func (mcs *masterCommsServer) StartStreams(stream grpc.BidiStreamingServer[Worke
 	}
 	workerIdMsg := protoMsg.GetWorkerID()
 	if workerIdMsg == nil {
+		log.Error().Caller().Msg("expected WorkerID msg first")
 		return errors.New("expected WorkerID msg first")
 	}
 	workerID := workerIdMsg.GetId()
+	log.Info().Caller().Msgf("workerID %s connected to master", workerID)
 
 	masterSendChan := make(chan *MasterMessage)
 
@@ -128,6 +134,7 @@ func NewMasterComms(port uint16, metricChan chan *MetricsMessage /* TODO: includ
 		log.Error().Caller().Msg(err.Error())
 		return nil, err
 	}
+	log.Info().Caller().Msgf("master listening on port %d", port)
 	mc.lis = lis
 
 	return mc, nil
