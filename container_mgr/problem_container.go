@@ -16,9 +16,9 @@ import (
 type ProblemContainer struct {
 	problemID     string
 	containerName string
-	containerPort uint16
-	hostPort      uint16
-	commsClient   ccomms.VolpeContainerClient
+	//	containerPort uint16
+	hostPort    uint16
+	commsClient ccomms.VolpeContainerClient
 }
 
 func genContainerName(problemID string) string {

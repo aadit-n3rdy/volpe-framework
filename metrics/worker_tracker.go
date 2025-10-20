@@ -1,4 +1,4 @@
-package metrics_export
+package metrics
 
 import (
 	"sync"

@@ -1,11 +1,11 @@
-package metrics_export
+package container_mgr
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/containers/podman/v5/pkg/bindings/containers"
+	pmtypes "github.com/containers/podman/v5/pkg/domain/entities/types"
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -15,16 +15,7 @@ import (
 
 	"volpe-framework/comms/volpe"
 	volpeComms "volpe-framework/comms/volpe"
-	cm "volpe-framework/container_mgr"
 )
-
-type PodmanMetricExporter struct {
-	conn       context.Context
-	problems   map[string]string
-	deviceName string
-	meter      otelmetric.Meter
-	comms      *volpeComms.WorkerComms
-}
 
 var meterprovider *metric.MeterProvider
 var exporter *otlpmetricgrpc.Exporter
@@ -47,44 +38,15 @@ func InitOTelSDK() error {
 	return nil
 }
 
-func NewPodmanMetricExporter(deviceName string, problems map[string]string, comms *volpeComms.WorkerComms) (pme *PodmanMetricExporter, err error) {
-	if meterprovider == nil {
-		return nil, errors.New("OTel SDK has not been initialized, call InitOTelSDK()")
-	}
-	// problems: map of problem name to container name
-	pme = new(PodmanMetricExporter)
-	pme.conn, err = cm.NewPodmanConnection()
-	if err != nil {
-		log.Error().Caller().Msg(err.Error())
-		return nil, err
-	}
+func (cm *ContainerManager) getMetricsChannel(conn context.Context) chan pmtypes.ContainerStatsReport {
+	cm.pcMut.Lock()
 
-	pme.problems = make(map[string]string)
-	for problem, contName := range problems {
-		pme.problems[contName] = problem
-	}
-
-	pme.deviceName = deviceName
-	pme.meter = otel.Meter("volpe-framework")
-	return
-}
-
-func (pme *PodmanMetricExporter) Run() error {
-	conn, err := cm.NewPodmanConnection()
-	if err != nil {
-		log.Error().Caller().Msg(err.Error())
-		return err
-	}
-
-	cpuUtilPerAppln, _ := pme.meter.Float64Gauge("volpe_cpu_util_per_appln",
-		otelmetric.WithDescription("CPU Utilization per appln per container"),
-	)
-
+	defer cm.pcMut.Unlock()
 	statsStream := true
 	statsAll := false
-	contNames := make([]string, len(pme.problems))
+	contNames := make([]string, len(cm.problemContainers))
 	i := 0
-	for k := range pme.problems {
+	for k := range cm.containers {
 		contNames[i] = k
 		i += 1
 	}
@@ -92,6 +54,23 @@ func (pme *PodmanMetricExporter) Run() error {
 		Stream: &statsStream,
 		All:    &statsAll,
 	})
+	return statChan
+
+}
+
+func (cm *ContainerManager) RunMetricsExport(comms *volpe.WorkerComms, deviceName string) error {
+	conn, err := NewPodmanConnection()
+	if err != nil {
+		log.Error().Caller().Msg(err.Error())
+		return err
+	}
+
+	cpuUtilPerAppln, _ := cm.meter.Float64Gauge("volpe_cpu_util_per_appln",
+		otelmetric.WithDescription("CPU Utilization per appln per container"),
+	)
+
+	statChan := cm.getMetricsChannel(conn)
+
 	applnMetrics := make(map[string]*volpeComms.ApplicationMetrics)
 	metricsMsg := &volpeComms.MetricsMessage{
 		CpuUtil:            0,
@@ -108,7 +87,9 @@ func (pme *PodmanMetricExporter) Run() error {
 		for i := range report.Stats {
 			contName := report.Stats[i].Name
 			log.Info().Caller().Msgf("reporting on %s", contName)
-			pblmName, ok := pme.problems[contName]
+			cm.pcMut.Lock()
+			pblmName, ok := cm.containers[contName]
+			cm.pcMut.Unlock()
 			if !ok {
 				pblmName = "<unknown>"
 				log.Warn().Caller().Msgf("unknown container %s", contName)
@@ -117,7 +98,7 @@ func (pme *PodmanMetricExporter) Run() error {
 			attribSet, ok := attribSets[pblmName]
 			if !ok {
 				attribSet = attribute.NewSet(
-					attribute.KeyValue{Key: attribute.Key("host"), Value: attribute.StringValue(pme.deviceName)},
+					attribute.KeyValue{Key: attribute.Key("host"), Value: attribute.StringValue(deviceName)},
 					attribute.KeyValue{Key: attribute.Key("problem"), Value: attribute.StringValue(pblmName)},
 				)
 			}
@@ -138,6 +119,6 @@ func (pme *PodmanMetricExporter) Run() error {
 		}
 		metricsMsg.CpuUtil = totalCPU
 		metricsMsg.MemUsage = totalMem
-		pme.comms.SendMetrics(metricsMsg)
+		comms.SendMetrics(metricsMsg)
 	}
 }
