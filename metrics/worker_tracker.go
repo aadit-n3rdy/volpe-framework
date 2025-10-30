@@ -1,9 +1,36 @@
 package metrics
 
 import (
+	"context"
 	"sync"
 	"time"
+
+	"github.com/rs/zerolog/log"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
+	"go.opentelemetry.io/otel/sdk/metric"
 )
+
+var meterprovider *metric.MeterProvider
+var exporter *otlpmetricgrpc.Exporter
+var reader *metric.PeriodicReader
+
+func InitOTelSDK() error {
+	var err error
+	exporter, err = otlpmetricgrpc.New(
+		context.Background(),
+		otlpmetricgrpc.WithInsecure(),
+	)
+	if err != nil {
+		log.Error().Caller().Msg(err.Error())
+		return err
+	}
+	reader = metric.NewPeriodicReader(exporter, metric.WithInterval(3*time.Second))
+	meterprovider = metric.NewMeterProvider(metric.WithReader(reader))
+
+	otel.SetMeterProvider(meterprovider)
+	return nil
+}
 
 type StaticWorkerTracker struct {
 	workers     map[WorkerID]*WorkerData

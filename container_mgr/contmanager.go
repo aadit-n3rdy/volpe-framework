@@ -28,6 +28,9 @@ type ContainerManager struct {
 func NewContainerManager() *ContainerManager {
 	cm := new(ContainerManager)
 	cm.meter = otel.Meter("volpe-framework")
+	cm.problemContainers = make(map[string]*ProblemContainer)
+	cm.containers = make(map[string]string)
+	cm.containersUpdated = false
 	return cm
 }
 

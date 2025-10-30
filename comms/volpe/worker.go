@@ -12,15 +12,18 @@ import (
 // TODO: handle stream closing
 
 type WorkerComms struct {
-	client VolpeMasterClient
-	stream grpc.BidiStreamingClient[WorkerMessage, MasterMessage]
+	client   VolpeMasterClient
+	stream   grpc.BidiStreamingClient[WorkerMessage, MasterMessage]
+	workerID string
 	// TODO: include something for population
 }
 
 func NewWorkerComms(endpoint string, workerID string) (*WorkerComms, error) {
 	// TODO: channel or something for population adjust
 	wc := new(WorkerComms)
-	conn, err := grpc.NewClient(endpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	wc.workerID = workerID
+	conn, err := grpc.NewClient(endpoint,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Error().Caller().Msg(err.Error())
 		return nil, err
@@ -45,14 +48,17 @@ func NewWorkerComms(endpoint string, workerID string) (*WorkerComms, error) {
 		return nil, err
 	}
 
+	log.Info().Caller().Msg("connected to master, streaming")
+
 	return wc, nil
 }
 
 func (wc *WorkerComms) SendMetrics(metrics *MetricsMessage) error {
+	metrics.WorkerID = wc.workerID
 	workerMsg := WorkerMessage{Message: &WorkerMessage_Metrics{metrics}}
 	err := wc.stream.Send(&workerMsg)
 	if err != nil {
-		log.Error().Caller().Msg(err.Error())
+		log.Error().Caller().Msgf("sending metrics: %s", err.Error())
 	}
 	return err
 }
@@ -61,7 +67,7 @@ func (wc *WorkerComms) SendSubPopulation(population *common.Population) error {
 	workerMsg := WorkerMessage{Message: &WorkerMessage_Population{population}}
 	err := wc.stream.Send(&workerMsg)
 	if err != nil {
-		log.Error().Caller().Msg(err.Error())
+		log.Error().Caller().Msgf("sending subpop: %s", err.Error())
 	}
 	return err
 }

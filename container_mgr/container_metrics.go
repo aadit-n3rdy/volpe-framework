@@ -7,53 +7,27 @@ import (
 	"github.com/containers/podman/v5/pkg/bindings/containers"
 	pmtypes "github.com/containers/podman/v5/pkg/domain/entities/types"
 	"github.com/rs/zerolog/log"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	otelmetric "go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/sdk/metric"
 
 	"volpe-framework/comms/volpe"
 	volpeComms "volpe-framework/comms/volpe"
 )
 
-var meterprovider *metric.MeterProvider
-var exporter *otlpmetricgrpc.Exporter
-var reader *metric.PeriodicReader
-
-func InitOTelSDK() error {
-	var err error
-	exporter, err = otlpmetricgrpc.New(
-		context.Background(),
-		otlpmetricgrpc.WithInsecure(),
-	)
-	if err != nil {
-		log.Error().Caller().Msg(err.Error())
-		return err
-	}
-	reader = metric.NewPeriodicReader(exporter, metric.WithInterval(3*time.Second))
-	meterprovider = metric.NewMeterProvider(metric.WithReader(reader))
-
-	otel.SetMeterProvider(meterprovider)
-	return nil
-}
-
 func (cm *ContainerManager) getMetricsChannel(conn context.Context) chan pmtypes.ContainerStatsReport {
 	cm.pcMut.Lock()
 
 	defer cm.pcMut.Unlock()
-	statsStream := true
-	statsAll := false
 	contNames := make([]string, len(cm.problemContainers))
 	i := 0
 	for k := range cm.containers {
 		contNames[i] = k
 		i += 1
 	}
-	statChan, _ := containers.Stats(conn, contNames, &containers.StatsOptions{
-		Stream: &statsStream,
-		All:    &statsAll,
-	})
+	options := containers.StatsOptions{}
+	statChan, _ := containers.Stats(conn, contNames,
+		options.WithAll(false).WithStream(false),
+	)
 	return statChan
 
 }
@@ -69,8 +43,6 @@ func (cm *ContainerManager) RunMetricsExport(comms *volpe.WorkerComms, deviceNam
 		otelmetric.WithDescription("CPU Utilization per appln per container"),
 	)
 
-	statChan := cm.getMetricsChannel(conn)
-
 	applnMetrics := make(map[string]*volpeComms.ApplicationMetrics)
 	metricsMsg := &volpeComms.MetricsMessage{
 		CpuUtil:            0,
@@ -80,6 +52,7 @@ func (cm *ContainerManager) RunMetricsExport(comms *volpe.WorkerComms, deviceNam
 	}
 	attribSets := make(map[string]attribute.Set)
 	for {
+		statChan := cm.getMetricsChannel(conn)
 		report := <-statChan
 		log.Info().Caller().Msg("got report")
 		totalCPU := float32(0)
@@ -120,5 +93,6 @@ func (cm *ContainerManager) RunMetricsExport(comms *volpe.WorkerComms, deviceNam
 		metricsMsg.CpuUtil = totalCPU
 		metricsMsg.MemUsage = totalMem
 		comms.SendMetrics(metricsMsg)
+		time.Sleep(15 * time.Second)
 	}
 }

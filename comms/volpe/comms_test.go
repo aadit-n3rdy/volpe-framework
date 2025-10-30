@@ -52,4 +52,5 @@ func TestComms(t *testing.T) {
 	if recMsg.CpuUtil != 1.5 || recMsg.MemUsage != 1.5 || recMsg.WorkerID != "abcd123" {
 		t.Fail()
 	}
+	t.Log("metrics received properly")
 }

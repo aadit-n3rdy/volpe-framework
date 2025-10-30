@@ -34,6 +34,8 @@ func mcsStreamHandlerThread(
 	// TODO: add a population handler here, to send popln msgs
 ) {
 
+	log.Info().Caller().Msgf("workerID %s connected", workerID)
+
 	masterRecvChan := make(chan *WorkerMessage)
 	readerContext, closeReader := context.WithCancel(context.Background())
 
@@ -63,6 +65,7 @@ func mcsStreamHandlerThread(
 				return
 			}
 			if result.GetMetrics() != nil {
+				log.Info().Caller().Msgf("workerID %s received metrics", workerID)
 				metricChan <- result.GetMetrics()
 			} else if result.GetPopulation() != nil {
 				// TODO: Send population to appropriate worker
@@ -104,6 +107,7 @@ func (mcs *masterCommsServer) StartStreams(stream grpc.BidiStreamingServer[Worke
 	}
 	workerID := workerIdMsg.GetId()
 	log.Info().Caller().Msgf("workerID %s connected to master", workerID)
+	fmt.Println(workerID)
 
 	masterSendChan := make(chan *MasterMessage)
 
@@ -112,8 +116,7 @@ func (mcs *masterCommsServer) StartStreams(stream grpc.BidiStreamingServer[Worke
 
 	mcs.channs[workerID] = masterSendChan
 
-	go mcsStreamHandlerThread(workerID, stream, masterSendChan, mcs.metricChan)
-
+	mcsStreamHandlerThread(workerID, stream, masterSendChan, mcs.metricChan)
 	return nil
 }
 
