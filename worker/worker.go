@@ -35,6 +35,8 @@ func main() {
 
 	go cm.RunMetricsExport(wc, workerID)
 
+	go populationExtractor(cm, wc)
+
 	err = cm.AddProblem("problem1", "../comms/pybindings/grpc_test_img.tar")
 	if err != nil {
 		log.Fatal().Caller().Msgf("failed to run pod with error: %s", err.Error())
@@ -77,4 +79,23 @@ func main() {
 	// 	time.Sleep(5 * time.Second)
 	// }
 
+}
+
+func populationExtractor(cm *contman.ContainerManager, wc *vcomms.WorkerComms) {
+	// extracts popln every X seconds and sends to master
+	for {
+		pops, err := cm.GetSubpopulations()
+		if err == nil {
+			for _, pop := range pops {
+				err = wc.SendSubPopulation(pop)
+				if err != nil {
+					log.Error().Caller().Msgf("couldn't send subpop %s: %s",
+						pop.GetProblemID(),
+						err.Error(),
+					)
+				}
+			}
+		}
+		time.Sleep(15 * time.Second)
+	}
 }

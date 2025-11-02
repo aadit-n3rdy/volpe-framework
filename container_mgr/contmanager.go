@@ -56,6 +56,26 @@ func (cm *ContainerManager) AddProblem(problemID string, imagePath string) error
 	return nil
 }
 
+func (cm *ContainerManager) GetSubpopulations() ([]*common.Population, error) {
+	cm.pcMut.Lock()
+	defer cm.pcMut.Unlock()
+	pops := make([]*common.Population, len(cm.problemContainers))
+
+	var err error = nil
+
+	i := 0
+	for k, v := range cm.problemContainers {
+		pops[i], err = v.GetSubpopulation()
+		if err != nil {
+			log.Error().Caller().Msgf("error fetching subpop on %s: %s", k, err.Error())
+			return nil, err
+		}
+		pops[i].ProblemID = &k
+		i += 1
+	}
+	return pops, nil
+}
+
 func (cm *ContainerManager) HandlePopulationEvents(eventChannel chan *volpe.AdjustPopulationMessage) {
 	for {
 		msg, ok := <-eventChannel
