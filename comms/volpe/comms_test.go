@@ -3,6 +3,7 @@ package volpe_test
 import (
 	"testing"
 
+	ccomms "volpe-framework/comms/common"
 	comms "volpe-framework/comms/volpe"
 )
 
@@ -12,8 +13,9 @@ func TestComms(t *testing.T) {
 	// 1. setup master
 
 	metricChan := make(chan *comms.MetricsMessage, 5)
+	popChan := make(chan *ccomms.Population, 5)
 
-	mc, err := comms.NewMasterComms(8118, metricChan)
+	mc, err := comms.NewMasterComms(8118, metricChan, popChan)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,6 +47,20 @@ func TestComms(t *testing.T) {
 	}
 	t.Log("sent metrics to master")
 
+	problemID := "application1"
+
+	popMsg := ccomms.Population{
+		Members: []*ccomms.Individual{
+			&ccomms.Individual{Genotype: []byte{1, 2, 3}, Fitness: 10.0},
+		},
+		ProblemID: &problemID,
+	}
+	err = wc.SendSubPopulation(&popMsg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("sent pop to master")
+
 	recMsg, ok := <-metricChan
 	if !ok {
 		t.Fatal("channel closed")
@@ -53,4 +69,13 @@ func TestComms(t *testing.T) {
 		t.Fail()
 	}
 	t.Log("metrics received properly")
+
+	recPop, ok := <-popChan
+	if !ok {
+		t.Fatal("channel closed")
+	}
+	if len(recPop.Members) != 1 || *recPop.ProblemID != problemID {
+		t.Fail()
+	}
+	t.Log("pop received properly")
 }

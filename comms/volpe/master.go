@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"sync"
+	"volpe-framework/comms/common"
 
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
@@ -23,6 +24,7 @@ type masterCommsServer struct {
 	chans_mut  sync.RWMutex
 	channs     map[string]chan *MasterMessage
 	metricChan chan *MetricsMessage
+	popChan    chan *common.Population
 	// TODO: include something for population
 }
 
@@ -31,7 +33,7 @@ func mcsStreamHandlerThread(
 	stream grpc.BidiStreamingServer[WorkerMessage, MasterMessage],
 	masterSendChan chan *MasterMessage,
 	metricChan chan *MetricsMessage,
-	// TODO: add a population handler here, to send popln msgs
+	popChan chan *common.Population,
 ) {
 
 	log.Info().Caller().Msgf("workerID %s connected", workerID)
@@ -68,8 +70,9 @@ func mcsStreamHandlerThread(
 				log.Info().Caller().Msgf("workerID %s received metrics", workerID)
 				metricChan <- result.GetMetrics()
 			} else if result.GetPopulation() != nil {
-				// TODO: Send population to appropriate worker
-				log.Warn().Caller().Msgf("population msg not implemented in master comms")
+				// TODO (DONE) : Send population to appropriate container
+				log.Info().Caller().Msgf("workerID %s received population", workerID)
+				popChan <- result.GetPopulation()
 			} else if result.GetWorkerID() != nil {
 				log.Warn().Caller().Msg("got unexpected workerID from stream for " + workerID)
 			}
@@ -116,13 +119,13 @@ func (mcs *masterCommsServer) StartStreams(stream grpc.BidiStreamingServer[Worke
 
 	mcs.channs[workerID] = masterSendChan
 
-	mcsStreamHandlerThread(workerID, stream, masterSendChan, mcs.metricChan)
+	mcsStreamHandlerThread(workerID, stream, masterSendChan, mcs.metricChan, mcs.popChan)
 	return nil
 }
 
 func (mcs *masterCommsServer) mustEmbedUnimplementedVolpeMasterServer() {}
 
-func NewMasterComms(port uint16, metricChan chan *MetricsMessage /* TODO: include something for popln */) (*MasterComms, error) {
+func NewMasterComms(port uint16, metricChan chan *MetricsMessage, popChan chan *common.Population) (*MasterComms, error) {
 	mc := new(MasterComms)
 	err := initMasterCommsServer(&mc.mcs, metricChan)
 	if err != nil {

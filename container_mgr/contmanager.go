@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"sync"
+	"volpe-framework/comms/common"
 	ccoms "volpe-framework/comms/container"
 	"volpe-framework/comms/volpe"
 
@@ -66,12 +67,39 @@ func (cm *ContainerManager) HandlePopulationEvents(eventChannel chan *volpe.Adju
 	}
 }
 
+func (cm *ContainerManager) IncorporatePopulation(pop *common.Population) {
+	cm.pcMut.Lock()
+	defer cm.pcMut.Unlock()
+
+	cont, ok := cm.problemContainers[pop.GetProblemID()]
+	if !ok {
+		log.Error().Caller().Msgf("problemID %s nonexistent for incorp. population", pop.GetProblemID())
+		return
+	}
+	reply, err := cont.commsClient.InitFromSeedPopulation(context.Background(), pop)
+	if err != nil {
+		log.Error().Caller().Msgf("couldn't incorp popln for problemID %s: %s",
+			pop.GetProblemID(),
+			err.Error(),
+		)
+		return
+	}
+	if !reply.Success {
+		log.Error().Caller().Msgf("incorp failed for problem %s: %s",
+			pop.GetProblemID(),
+			reply.GetMessage(),
+		)
+		return
+	}
+}
+
 func (cm *ContainerManager) handleEvent(event *volpe.AdjustPopulationMessage) {
 	cm.pcMut.Lock()
 	defer cm.pcMut.Unlock()
 	pc, ok := cm.problemContainers[event.GetProblemID()]
 	if !ok {
-		log.Warn().Caller().Msgf("received msg for problem ID %s, but problem container does not exist", event.GetProblemID())
+		log.Warn().Caller().Msgf("received msg for problem ID %s, but problem container does not exist, creation not handled yet", event.GetProblemID())
+		// TODO: add logic to create container
 		return
 	}
 	popSize := &ccoms.PopulationSize{Size: event.Size}

@@ -10,6 +10,7 @@ service VolpeContainer {
   rpc InitFromSeed (Seed) returns (Reply) {}
 
   rpc InitFromSeedPopulation (Population) returns (Reply) {}
+  // used to init or incorporate a population
 
   rpc GetBestPopulation (PopulationSize) returns (Population) {}
 
