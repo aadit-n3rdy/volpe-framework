@@ -9,13 +9,24 @@ import (
 
 // Tests comms between master and worker
 
+type DummySched struct {
+}
+
+func (ds *DummySched) AddWorker(_ string) {
+}
+
+func (ds *DummySched) RemoveWorker(_ string) {
+}
+
 func TestComms(t *testing.T) {
 	// 1. setup master
 
 	metricChan := make(chan *comms.MetricsMessage, 5)
 	popChan := make(chan *ccomms.Population, 5)
 
-	mc, err := comms.NewMasterComms(8118, metricChan, popChan)
+	dummySched := DummySched{}
+
+	mc, err := comms.NewMasterComms(8118, metricChan, popChan, &dummySched)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -76,6 +76,18 @@ func (cm *ContainerManager) GetSubpopulations() ([]*common.Population, error) {
 	return pops, nil
 }
 
+func (cm *ContainerManager) GetSubpopulation(problemID string) (*common.Population, error) {
+	cm.pcMut.Lock()
+	defer cm.pcMut.Unlock()
+
+	container, ok := cm.problemContainers[problemID]
+	if !ok {
+		log.Error().Caller().Msgf("unknown problemID %s", problemID)
+		return nil, errors.New("unknown problemID")
+	}
+	return container.GetSubpopulation()
+}
+
 func (cm *ContainerManager) HandlePopulationEvents(eventChannel chan *volpe.AdjustPopulationMessage) {
 	for {
 		msg, ok := <-eventChannel

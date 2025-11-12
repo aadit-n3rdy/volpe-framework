@@ -3,16 +3,26 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 	ccomms "volpe-framework/comms/common"
 	vcomms "volpe-framework/comms/volpe"
 	cm "volpe-framework/container_mgr"
 	"volpe-framework/metrics"
+	"volpe-framework/scheduler"
 
 	"github.com/rs/zerolog/log"
 )
 
 func main() {
 	metrics.InitOTelSDK()
+
+	sched, err := scheduler.NewStaticScheduler([]string{"abcd123", "xyzabc"})
+	if err != nil {
+		log.Error().Caller().Msgf("err with sched: %s", err.Error())
+		panic(err)
+	}
+
+	sched.Init()
 
 	port, ok := os.LookupEnv("VOLPE_PORT")
 	if !ok {
@@ -27,20 +37,20 @@ func main() {
 	metricChan := make(chan *vcomms.MetricsMessage, 10)
 	popChan := make(chan *ccomms.Population, 10)
 
-	mc, err := vcomms.NewMasterComms(portD, metricChan, popChan)
+	mc, err := vcomms.NewMasterComms(portD, metricChan, popChan, sched)
 	if err != nil {
 		log.Fatal().Caller().Msgf("error initializing master comms: %s", err.Error())
 		panic(err)
 	}
 
-	go clearMetricChan(metricChan)
+	go sendMetric(metricChan, sched)
 
-	go sendPopulation(cman, popChan)
+	go recvPopulation(cman, popChan)
 
 	mc.Serve()
 }
 
-func sendPopulation(cman *cm.ContainerManager, popChan chan *ccomms.Population) {
+func recvPopulation(cman *cm.ContainerManager, popChan chan *ccomms.Population) {
 	for {
 		m, ok := <-popChan
 		if !ok {
@@ -52,14 +62,48 @@ func sendPopulation(cman *cm.ContainerManager, popChan chan *ccomms.Population) 
 	}
 }
 
-func clearMetricChan(metricChan chan *vcomms.MetricsMessage) {
-	// dummy func to just read metrics
+func sendMetric(metricChan chan *vcomms.MetricsMessage, sched scheduler.Scheduler) {
 	for {
 		m, ok := <-metricChan
 		if !ok {
 			log.Error().Caller().Msg("metricChan closed")
 			return
 		}
-		log.Info().Caller().Msgf("cleared metric from %s", m.GetWorkerID())
+		sched.UpdateMetrics(m)
+	}
+}
+ 
+func applySchedule(master *vcomms.MasterComms, cman *cm.ContainerManager, sched scheduler.Scheduler) {
+	// TODO: optimise by calculating deltas
+	schedule := make(scheduler.Schedule)
+	for {
+		err := sched.FillSchedule(schedule)
+		if err != nil {
+			log.Error().Caller().Msgf("error filling sched: %s", err.Error())
+			return
+		}
+		schedule.Apply(func (workerID string, problemID string, val int32) {
+			subpop, err := cman.GetSubpopulation(problemID)
+			if err != nil {
+				log.Error().Caller().Msgf("error getting subpop wID %s pID %s to update schedule: %s", workerID, problemID, err.Error())
+				return
+			}
+			msg := vcomms.MasterMessage{
+				Message: &vcomms.MasterMessage_AdjPop{
+					AdjPop: &vcomms.AdjustPopulationMessage{
+						ProblemID: problemID,
+						Seed: subpop,
+						Size: val,
+					},
+				},
+			}
+			err = master.SendPopulationSize(workerID, &msg)
+			if err != nil {
+				log.Error().Caller().Msgf("error pushing subpop wID %s pID %s: %s", workerID, problemID, err.Error())
+				return
+			}
+		})
+
+		time.Sleep(2*time.Minute)
 	}
 }

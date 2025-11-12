@@ -25,7 +25,13 @@ type masterCommsServer struct {
 	channs     map[string]chan *MasterMessage
 	metricChan chan *MetricsMessage
 	popChan    chan *common.Population
+	sched SchedulerComms
 	// TODO: include something for population
+}
+
+type SchedulerComms interface {
+	AddWorker(workerID string);
+	RemoveWorker(workerID string);
 }
 
 func mcsStreamHandlerThread(
@@ -119,29 +125,40 @@ func (mcs *masterCommsServer) StartStreams(stream grpc.BidiStreamingServer[Worke
 
 	mcs.channs[workerID] = masterSendChan
 
+	mcs.sched.AddWorker(workerID)
+
 	mcsStreamHandlerThread(workerID, stream, masterSendChan, mcs.metricChan, mcs.popChan)
+
+	mcs.sched.RemoveWorker(workerID)
 	return nil
 }
 
 func (mcs *masterCommsServer) mustEmbedUnimplementedVolpeMasterServer() {}
 
-func NewMasterComms(port uint16, metricChan chan *MetricsMessage, popChan chan *common.Population) (*MasterComms, error) {
+func NewMasterComms(port uint16, metricChan chan *MetricsMessage, popChan chan *common.Population, sched SchedulerComms) (*MasterComms, error) {
 	mc := new(MasterComms)
 	err := initMasterCommsServer(&mc.mcs, metricChan)
 	if err != nil {
 		log.Error().Caller().Msg(err.Error())
 		return nil, err
 	}
+
+	
 	sr := grpc.NewServer()
 	mc.sr = sr
-	RegisterVolpeMasterServer(sr, &mc.mcs)
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", port))
 	if err != nil {
 		log.Error().Caller().Msg(err.Error())
 		return nil, err
 	}
 	log.Info().Caller().Msgf("master listening on port %d", port)
+	
 	mc.lis = lis
+	mc.mcs.sched = sched
+	mc.mcs.popChan = popChan
+	mc.mcs.metricChan = metricChan
+
+	RegisterVolpeMasterServer(sr, &mc.mcs)
 
 	return mc, nil
 }
@@ -152,4 +169,13 @@ func (mc *MasterComms) Serve() error {
 		log.Error().Caller().Msg(err.Error())
 	}
 	return err
+}
+
+func (mc *MasterComms) SendPopulationSize(workerID string, msg *MasterMessage) error {
+	mcchan, ok := mc.mcs.channs[workerID]
+	if !ok {
+		return errors.New("unknown workerID")
+	}
+	mcchan <- msg
+	return nil
 }
