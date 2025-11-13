@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+import "common.proto";
+
+option go_package = "volpe-framework/comms/api";
+
+service VolpeAPI {
+  rpc RegisterImage(stream ImageChunk) returns (Result) {};
+  rpc RegisterProblem(RegisterProblemRequest) returns (Result) {};
+  rpc StartProblem(StartProblemRequest) returns (stream ProblemResult) {};
+  rpc AbortProblem(AbortProblemRequest) returns (Result) {};
+}
+
+message CreateImageRequest {
+  string imageName = 1;
+  int32 imageSizeBytes = 2;
+}
+
+message ImageChunk {
+  optional string problemID  = 1;
+  bool done = 2;
+  bytes data = 3;
+}
+
+message Result {
+  bool success = 1;
+  string errorMessage = 2;
+}
+
+message RegisterProblemRequest {
+  string problemID = 1;
+  int32 imageSizeBytes = 2;
+}
+
+message StartProblemRequest {
+  string problemID = 1;
+  float fitnessThreshold = 2;
+}
+
+message ProblemResult {
+  string problemID = 1;
+  Population bestResults = 2;
+}
+
+message AbortProblemRequest {
+  string problemID = 1;
+}

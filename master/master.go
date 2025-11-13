@@ -47,6 +47,8 @@ func main() {
 
 	go recvPopulation(cman, popChan)
 
+	go applySchedule(mc, cman, sched)
+
 	mc.Serve()
 }
 
@@ -83,18 +85,22 @@ func applySchedule(master *vcomms.MasterComms, cman *cm.ContainerManager, sched 
 			return
 		}
 		schedule.Apply(func (workerID string, problemID string, val int32) {
-			subpop, err := cman.GetSubpopulation(problemID)
-			if err != nil {
-				log.Error().Caller().Msgf("error getting subpop wID %s pID %s to update schedule: %s", workerID, problemID, err.Error())
-				return
+			adjpop := &vcomms.AdjustPopulationMessage{
+				ProblemID: problemID,
+				Seed: nil, 
+				Size: val,
+			}
+			if val != 0 {
+				subpop, err := cman.GetSubpopulation(problemID)
+				if err != nil {
+					log.Error().Caller().Msgf("error getting subpop wID %s pID %s to update schedule: %s", workerID, problemID, err.Error())
+					return
+				}
+				adjpop.Seed = subpop
 			}
 			msg := vcomms.MasterMessage{
 				Message: &vcomms.MasterMessage_AdjPop{
-					AdjPop: &vcomms.AdjustPopulationMessage{
-						ProblemID: problemID,
-						Seed: subpop,
-						Size: val,
-					},
+					AdjPop: adjpop,
 				},
 			}
 			err = master.SendPopulationSize(workerID, &msg)
@@ -103,7 +109,6 @@ func applySchedule(master *vcomms.MasterComms, cman *cm.ContainerManager, sched 
 				return
 			}
 		})
-
 		time.Sleep(2*time.Minute)
 	}
 }
